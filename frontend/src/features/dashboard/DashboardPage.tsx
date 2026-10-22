@@ -93,6 +93,8 @@ function getStatusClass(status: string) {
   }
 }
 
+
+
 function StatCard({
   label,
   value,
@@ -108,23 +110,22 @@ function StatCard({
 }) {
   return (
     <article className="ts-stat-card">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="text-sm font-medium ts-secondary">{label}</p>
-          <p className="mt-3 text-3xl font-semibold tracking-tight ts-text">
-            {value.toLocaleString()}
-          </p>
+      <div className="ts-stat-card-header">
+        <div className="ts-stat-card-content">
+          <p className="ts-stat-card-label">{label}</p>
+          <p className="ts-stat-card-value">{value.toLocaleString()}</p>
+          <p className="ts-stat-card-description">{description}</p>
         </div>
 
         <div className={`ts-stat-icon ts-stat-icon-${variant}`}>
           <Icon size={20} strokeWidth={1.8} />
         </div>
       </div>
-
-      <p className="mt-3 text-xs leading-5 ts-muted">{description}</p>
     </article>
   );
 }
+
+
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -333,7 +334,7 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         <StatCard
           label="Total projects"
           value={projects.length}
@@ -395,16 +396,140 @@ export default function DashboardPage() {
         )}
       </div>
 
-      <section className="grid grid-cols-1 gap-4 xl:grid-cols-2" aria-label="Workspace analytics">
+      <section
+        className="grid grid-cols-1 gap-4 xl:grid-cols-2"
+        aria-label="Workspace analytics"
+      >
         <article className="ts-panel rounded-2xl p-5">
-          <div className="mb-4 flex items-center justify-between gap-3"><div><h2 className="text-sm font-semibold ts-text">Task status overview</h2><p className="mt-1 text-xs ts-muted">Based on tasks visible to your account</p></div><span className="rounded-full px-3 py-1 text-xs font-semibold" style={{background:"var(--ts-accent-soft)",color:"var(--ts-accent)"}}>{tasks.length} tasks</span></div>
-          {tasks.length === 0 ? <p className="rounded-xl p-5 text-sm ts-muted" style={{background:"var(--ts-surface-muted)"}}>Task analytics will appear when tasks are assigned.</p> : <div className="space-y-4">
-            {[{label:"To Do",count:tasks.filter(t=>t.status==="To Do").length},{label:"In Progress",count:tasks.filter(t=>t.status==="In Progress").length},{label:"In Review",count:tasks.filter(t=>t.status==="In Review").length},{label:"Changes Required",count:tasks.filter(t=>t.status==="Changes Required").length},{label:"Done",count:completedTasks}].map((item)=> <div key={item.label}><div className="mb-1.5 flex items-center justify-between gap-3 text-xs"><span className="ts-secondary">{item.label}</span><strong className="ts-text">{item.count}</strong></div><div className="h-2.5 overflow-hidden rounded-full" style={{background:"var(--ts-surface-muted)"}}><div className="h-full rounded-full transition-all" style={{width:`${Math.round(item.count / Math.max(tasks.length,1) * 100)}%`,background:item.label==="Done"?"var(--ts-success, #238636)":item.label==="Changes Required"?"var(--ts-danger)":"var(--ts-accent)"}} /></div></div>)}
-          </div>}
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-semibold ts-text">
+                Task status overview
+              </h2>
+              <p className="mt-1 text-xs ts-muted">
+                Based on tasks visible to your account
+              </p>
+            </div>
+            <span
+              className="rounded-full px-3 py-1 text-xs font-semibold"
+              style={{
+                background: "var(--ts-accent-soft)",
+                color: "var(--ts-accent)",
+              }}
+            >
+              {tasks.length} tasks
+            </span>
+          </div>
+          {tasks.length === 0 ? (
+            <p
+              className="rounded-xl p-5 text-sm ts-muted"
+              style={{ background: "var(--ts-surface-muted)" }}
+            >
+              Task analytics will appear when tasks are assigned.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {[
+                {
+                  label: "To Do",
+                  count: tasks.filter((t) => t.status === "To Do").length,
+                },
+                {
+                  label: "In Progress",
+                  count: tasks.filter((t) => t.status === "In Progress").length,
+                },
+                {
+                  label: "In Review",
+                  count: tasks.filter((t) => t.status === "In Review").length,
+                },
+                {
+                  label: "Changes Required",
+                  count: tasks.filter((t) => t.status === "Changes Required")
+                    .length,
+                },
+                { label: "Done", count: completedTasks },
+              ].map((item) => (
+                <div key={item.label}>
+                  <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
+                    <span className="ts-secondary">{item.label}</span>
+                    <strong className="ts-text">{item.count}</strong>
+                  </div>
+                  <div
+                    className="h-2.5 overflow-hidden rounded-full"
+                    style={{ background: "var(--ts-surface-muted)" }}
+                  >
+                    <div
+                      className="h-full rounded-full transition-all"
+                      style={{
+                        width: `${Math.round((item.count / Math.max(tasks.length, 1)) * 100)}%`,
+                        background:
+                          item.label === "Done"
+                            ? "var(--ts-success, #238636)"
+                            : item.label === "Changes Required"
+                              ? "var(--ts-danger)"
+                              : "var(--ts-accent)",
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </article>
         <article className="ts-panel rounded-2xl p-5">
-          <div className="mb-4"><h2 className="text-sm font-semibold ts-text">Project progress</h2><p className="mt-1 text-xs ts-muted">Completion calculated from real task statuses</p></div>
-          {projects.length === 0 ? <p className="rounded-xl p-5 text-sm ts-muted" style={{background:"var(--ts-surface-muted)"}}>Project progress will appear when projects are available.</p> : <div className="space-y-4">{projects.slice(0,5).map((project)=>{const projectTasks=tasks.filter(task=>task.project_id===project.id);const done=projectTasks.filter(task=>task.status==="Done").length;const progress=projectTasks.length?Math.round(done/projectTasks.length*100):0;return <div key={project.id}><div className="mb-1.5 flex items-center justify-between gap-3 text-xs"><span className="min-w-0 truncate ts-secondary">{project.name}</span><strong className="shrink-0 ts-text">{progress}%</strong></div><div className="h-2.5 overflow-hidden rounded-full" style={{background:"var(--ts-surface-muted)"}}><div className="h-full rounded-full transition-all" style={{width:`${progress}%`,background:"var(--ts-accent)"}} /></div><p className="mt-1 text-[11px] ts-muted">{done} of {projectTasks.length} tasks completed</p></div>})}</div>}
+          <div className="mb-4">
+            <h2 className="text-sm font-semibold ts-text">Project progress</h2>
+            <p className="mt-1 text-xs ts-muted">
+              Completion calculated from real task statuses
+            </p>
+          </div>
+          {projects.length === 0 ? (
+            <p
+              className="rounded-xl p-5 text-sm ts-muted"
+              style={{ background: "var(--ts-surface-muted)" }}
+            >
+              Project progress will appear when projects are available.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              {projects.slice(0, 5).map((project) => {
+                const projectTasks = tasks.filter(
+                  (task) => task.project_id === project.id,
+                );
+                const done = projectTasks.filter(
+                  (task) => task.status === "Done",
+                ).length;
+                const progress = projectTasks.length
+                  ? Math.round((done / projectTasks.length) * 100)
+                  : 0;
+                return (
+                  <div key={project.id}>
+                    <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
+                      <span className="min-w-0 truncate ts-secondary">
+                        {project.name}
+                      </span>
+                      <strong className="shrink-0 ts-text">{progress}%</strong>
+                    </div>
+                    <div
+                      className="h-2.5 overflow-hidden rounded-full"
+                      style={{ background: "var(--ts-surface-muted)" }}
+                    >
+                      <div
+                        className="h-full rounded-full transition-all"
+                        style={{
+                          width: `${progress}%`,
+                          background: "var(--ts-accent)",
+                        }}
+                      />
+                    </div>
+                    <p className="mt-1 text-[11px] ts-muted">
+                      {done} of {projectTasks.length} tasks completed
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </article>
       </section>
 
@@ -436,12 +561,25 @@ export default function DashboardPage() {
               {projects.map((project) => {
                 const expanded = expandedProjectIds.has(project.id);
                 const projectTasks = projectTasksById[project.id] ?? [];
-                const completedProjectTasks = projectTasks.filter((task) => task.status === "Done").length;
-                const pendingProjectTasks = projectTasks.length - completedProjectTasks;
-                const overdueProjectTasks = projectTasks.filter(isOverdue).length;
-                const projectProgress = projectTasks.length ? Math.round((completedProjectTasks / projectTasks.length) * 100) : 0;
-                const canSeeAllProjectTasks = user?.role === "admin" || (user?.role === "project_manager" && project.project_manager_id === user.id);
-                const taskScopeLabel = canSeeAllProjectTasks ? "Project tasks" : "My tasks";
+                const completedProjectTasks = projectTasks.filter(
+                  (task) => task.status === "Done",
+                ).length;
+                const pendingProjectTasks =
+                  projectTasks.length - completedProjectTasks;
+                const overdueProjectTasks =
+                  projectTasks.filter(isOverdue).length;
+                const projectProgress = projectTasks.length
+                  ? Math.round(
+                      (completedProjectTasks / projectTasks.length) * 100,
+                    )
+                  : 0;
+                const canSeeAllProjectTasks =
+                  user?.role === "admin" ||
+                  (user?.role === "project_manager" &&
+                    project.project_manager_id === user.id);
+                const taskScopeLabel = canSeeAllProjectTasks
+                  ? "Project tasks"
+                  : "My tasks";
 
                 return (
                   <div key={project.id}>
@@ -454,15 +592,21 @@ export default function DashboardPage() {
                           {project.description || "No project description"}
                         </p>
                         <p className="mt-1 text-xs ts-muted">
-                          Manager: {project.project_manager_name || "Not assigned"} · Due {formatDate(project.due_date)}
+                          Manager:{" "}
+                          {project.project_manager_name || "Not assigned"} · Due{" "}
+                          {formatDate(project.due_date)}
                         </p>
                       </div>
 
                       <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto">
-                        <span className={`ts-status ${getStatusClass(project.status)}`}>
+                        <span
+                          className={`ts-status ${getStatusClass(project.status)}`}
+                        >
                           {project.status.replace("_", " ")}
                         </span>
-                        <span className={`ts-status ${getPriorityClass(project.priority === "urgent" ? "urgent" : project.priority)}`}>
+                        <span
+                          className={`ts-status ${getPriorityClass(project.priority === "urgent" ? "urgent" : project.priority)}`}
+                        >
                           {project.priority}
                         </span>
                         <button
@@ -473,47 +617,200 @@ export default function DashboardPage() {
                           onClick={() => toggleProjectTasks(project.id)}
                         >
                           {expanded ? "Hide tasks" : "View tasks"}
-                          {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                          {expanded ? (
+                            <ChevronUp size={14} />
+                          ) : (
+                            <ChevronDown size={14} />
+                          )}
                         </button>
                       </div>
                     </div>
                     <div className="px-5 pb-4">
                       <div className="flex flex-wrap items-center justify-between gap-2 text-xs ts-muted">
-                        <span>{taskScopeLabel}: {projectTasks.length} · {completedProjectTasks} completed · {pendingProjectTasks} pending · {overdueProjectTasks} overdue</span>
+                        <span>
+                          {taskScopeLabel}: {projectTasks.length} ·{" "}
+                          {completedProjectTasks} completed ·{" "}
+                          {pendingProjectTasks} pending · {overdueProjectTasks}{" "}
+                          overdue
+                        </span>
                         <span>{projectProgress}% complete</span>
                       </div>
-                      <div className="mt-2 h-1.5 overflow-hidden rounded-full" style={{ background: "var(--ts-surface-muted)" }} aria-label={`Project task completion ${projectProgress}%`} role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={projectProgress}>
-                        <span className="block h-full rounded-full transition-all" style={{ width: `${projectProgress}%`, background: "var(--ts-accent)" }} />
+                      <div
+                        className="mt-2 h-1.5 overflow-hidden rounded-full"
+                        style={{ background: "var(--ts-surface-muted)" }}
+                        aria-label={`Project task completion ${projectProgress}%`}
+                        role="progressbar"
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={projectProgress}
+                      >
+                        <span
+                          className="block h-full rounded-full transition-all"
+                          style={{
+                            width: `${projectProgress}%`,
+                            background: "var(--ts-accent)",
+                          }}
+                        />
                       </div>
                     </div>
 
                     {expanded && (
-                      <div id={`project-top-tasks-${project.id}`} className="ts-project-task-expansion border-t px-4 py-3 sm:px-5" style={{ borderColor: "var(--ts-border)", background: "var(--ts-surface-muted)" }}>
-                        {user?.role !== "employee" && <section className="mb-4 rounded-lg border p-3" style={{ borderColor: "var(--ts-border)", background: "var(--ts-surface)" }}>
-                          <div className="mb-2 flex items-center justify-between gap-2"><p className="text-xs font-semibold ts-text">Project members</p>{projectMembersById[project.id] && <span className="text-xs ts-muted">{projectMembersById[project.id].length}</span>}</div>
-                          {user?.role === "employee" || (user?.role === "project_manager" && project.project_manager_id !== user.id) ? (
-                            <p className="text-xs ts-muted">Member roster is available to this project's assigned manager and Admins.</p>
-                          ) : projectMemberLoadingIds.has(project.id) ? (
-                            <div className="flex items-center gap-2 py-1 text-xs ts-secondary"><LoaderCircle className="animate-spin" size={14} />Loading members...</div>
-                          ) : projectMemberErrors[project.id] ? (
-                            <div className="flex flex-wrap items-center gap-2"><p className="text-xs" style={{ color: "var(--ts-danger)" }}>{projectMemberErrors[project.id]}</p><button type="button" className="text-xs font-semibold ts-accent" onClick={() => void fetchProjectMembers(project.id)}>Retry</button></div>
-                          ) : projectMembersById[project.id]?.length ? (
-                            <div className="flex flex-wrap gap-2">{projectMembersById[project.id].map((member) => <span key={member.id} className="rounded-full border px-2.5 py-1 text-xs ts-secondary" style={{ borderColor: "var(--ts-border)" }}>{member.full_name}{member.role === "project_manager" ? " · PM" : member.role === "admin" ? " · Admin" : ""}</span>)}</div>
-                          ) : <p className="text-xs ts-muted">No active project members are assigned yet.</p>}
-                        </section>}
-                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2"><p className="text-xs font-semibold uppercase tracking-wide ts-muted">{taskScopeLabel} · {projectTasks.length}</p><button type="button" className="inline-flex items-center gap-1 text-xs font-semibold ts-accent" onClick={() => navigate(`/tasks?projectId=${project.id}`)}>Open task workspace <ArrowUpRight size={13} /></button></div>
+                      <div
+                        id={`project-top-tasks-${project.id}`}
+                        className="ts-project-task-expansion border-t px-4 py-3 sm:px-5"
+                        style={{
+                          borderColor: "var(--ts-border)",
+                          background: "var(--ts-surface-muted)",
+                        }}
+                      >
+                        {user?.role !== "employee" && (
+                          <section
+                            className="mb-4 rounded-lg border p-3"
+                            style={{
+                              borderColor: "var(--ts-border)",
+                              background: "var(--ts-surface)",
+                            }}
+                          >
+                            <div className="mb-2 flex items-center justify-between gap-2">
+                              <p className="text-xs font-semibold ts-text">
+                                Project members
+                              </p>
+                              {projectMembersById[project.id] && (
+                                <span className="text-xs ts-muted">
+                                  {projectMembersById[project.id].length}
+                                </span>
+                              )}
+                            </div>
+                            {user?.role === "employee" ||
+                            (user?.role === "project_manager" &&
+                              project.project_manager_id !== user.id) ? (
+                              <p className="text-xs ts-muted">
+                                Member roster is available to this project's
+                                assigned manager and Admins.
+                              </p>
+                            ) : projectMemberLoadingIds.has(project.id) ? (
+                              <div className="flex items-center gap-2 py-1 text-xs ts-secondary">
+                                <LoaderCircle
+                                  className="animate-spin"
+                                  size={14}
+                                />
+                                Loading members...
+                              </div>
+                            ) : projectMemberErrors[project.id] ? (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p
+                                  className="text-xs"
+                                  style={{ color: "var(--ts-danger)" }}
+                                >
+                                  {projectMemberErrors[project.id]}
+                                </p>
+                                <button
+                                  type="button"
+                                  className="text-xs font-semibold ts-accent"
+                                  onClick={() =>
+                                    void fetchProjectMembers(project.id)
+                                  }
+                                >
+                                  Retry
+                                </button>
+                              </div>
+                            ) : projectMembersById[project.id]?.length ? (
+                              <div className="flex flex-wrap gap-2">
+                                {projectMembersById[project.id].map(
+                                  (member) => (
+                                    <span
+                                      key={member.id}
+                                      className="rounded-full border px-2.5 py-1 text-xs ts-secondary"
+                                      style={{
+                                        borderColor: "var(--ts-border)",
+                                      }}
+                                    >
+                                      {member.full_name}
+                                      {member.role === "project_manager"
+                                        ? " · PM"
+                                        : member.role === "admin"
+                                          ? " · Admin"
+                                          : ""}
+                                    </span>
+                                  ),
+                                )}
+                              </div>
+                            ) : (
+                              <p className="text-xs ts-muted">
+                                No active project members are assigned yet.
+                              </p>
+                            )}
+                          </section>
+                        )}
+                        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                          <p className="text-xs font-semibold uppercase tracking-wide ts-muted">
+                            {taskScopeLabel} · {projectTasks.length}
+                          </p>
+                          <button
+                            type="button"
+                            className="inline-flex items-center gap-1 text-xs font-semibold ts-accent"
+                            onClick={() =>
+                              navigate(`/tasks?projectId=${project.id}`)
+                            }
+                          >
+                            Open task workspace <ArrowUpRight size={13} />
+                          </button>
+                        </div>
                         {projectTasks.length === 0 ? (
-                          <p className="py-2 text-sm ts-secondary">{canSeeAllProjectTasks ? "No tasks have been created for this project yet." : "No tasks are assigned to you in this project yet."}</p>
+                          <p className="py-2 text-sm ts-secondary">
+                            {canSeeAllProjectTasks
+                              ? "No tasks have been created for this project yet."
+                              : "No tasks are assigned to you in this project yet."}
+                          </p>
                         ) : (
                           <div className="space-y-2">
                             {projectTasks.map((task) => (
-                              <button key={task.id} type="button" onClick={() => navigate(`/tasks?taskId=${task.id}`)} className="w-full rounded-lg border p-3 text-left transition hover:border-[var(--ts-focus)]" style={{ borderColor: "var(--ts-border)", background: "var(--ts-surface)" }}>
-                                <div className="flex flex-wrap items-start justify-between gap-2"><p className="min-w-0 flex-1 break-words text-sm font-medium ts-text">{task.title}</p><ArrowUpRight size={15} className="shrink-0 ts-muted" /></div>
-                                <p className="mt-1 text-xs ts-muted">Assigned to: {task.assigned_to_name || "Unassigned"} · Assigned by: {task.created_by_name || "Unknown"} · Project Manager: {task.project_manager_name || project.project_manager_name || "Not assigned"}</p>
+                              <button
+                                key={task.id}
+                                type="button"
+                                onClick={() =>
+                                  navigate(`/tasks?taskId=${task.id}`)
+                                }
+                                className="w-full rounded-lg border p-3 text-left transition hover:border-[var(--ts-focus)]"
+                                style={{
+                                  borderColor: "var(--ts-border)",
+                                  background: "var(--ts-surface)",
+                                }}
+                              >
+                                <div className="flex flex-wrap items-start justify-between gap-2">
+                                  <p className="min-w-0 flex-1 break-words text-sm font-medium ts-text">
+                                    {task.title}
+                                  </p>
+                                  <ArrowUpRight
+                                    size={15}
+                                    className="shrink-0 ts-muted"
+                                  />
+                                </div>
+                                <p className="mt-1 text-xs ts-muted">
+                                  Assigned to:{" "}
+                                  {task.assigned_to_name || "Unassigned"} ·
+                                  Assigned by:{" "}
+                                  {task.created_by_name || "Unknown"} · Project
+                                  Manager:{" "}
+                                  {task.project_manager_name ||
+                                    project.project_manager_name ||
+                                    "Not assigned"}
+                                </p>
                                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                                  <span className={`ts-status ${getStatusClass(task.status)}`}>{task.status}</span>
-                                  <span className={`ts-status ${getPriorityClass(task.priority)}`}>{task.priority}</span>
-                                  <span className="inline-flex items-center gap-1 text-xs ts-muted"><CalendarDays size={13} />{formatDate(task.due_date)}</span>
+                                  <span
+                                    className={`ts-status ${getStatusClass(task.status)}`}
+                                  >
+                                    {task.status}
+                                  </span>
+                                  <span
+                                    className={`ts-status ${getPriorityClass(task.priority)}`}
+                                  >
+                                    {task.priority}
+                                  </span>
+                                  <span className="inline-flex items-center gap-1 text-xs ts-muted">
+                                    <CalendarDays size={13} />
+                                    {formatDate(task.due_date)}
+                                  </span>
                                 </div>
                               </button>
                             ))}
@@ -527,7 +824,6 @@ export default function DashboardPage() {
             </div>
           )}
         </div>
-
       </div>
 
       {overdueTasks.length > 0 && (
