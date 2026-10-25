@@ -130,17 +130,17 @@ export default function WorkspaceLayout() {
       >
         {/* Branding */}
         <div className="flex h-20 items-center gap-3 border-b px-6">
-          <div className="rounded-xl bg-indigo-600 p-2.5 text-white">
-            <FolderKanban size={22} />
+          <div className="rounded-xl bg-white p-2.5 text-white">
+            <img
+              src="https://ik.imagekit.io/jktxr9q9s/image.png"
+              alt="Logo"
+              className="h-[28px] w-[28px] object-contain"
+            />
           </div>
 
           <div>
-            <h1 className="text-xl font-bold tracking-tight">
-              TeamSpace
-            </h1>
-            <p className="text-xs text-slate-500">
-              Team workspace
-            </p>
+            <h1 className="text-xl font-bold tracking-tight">TeamSpace</h1>
+            <p className="text-xs text-slate-500">Team workspace</p>
           </div>
 
           <button
@@ -187,17 +187,45 @@ export default function WorkspaceLayout() {
           <div className="ts-profile-card mb-3 flex items-center gap-3 rounded-xl p-3">
             <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-indigo-100 font-semibold text-indigo-700">
               <span>{user.full_name.charAt(0).toUpperCase()}</span>
-              {pictureUrl && <AuthenticatedProfileImage src={pictureUrl} refreshKey={pictureVersion} alt="" className="absolute inset-0 h-full w-full object-cover" />}
-              <label aria-label="Change profile picture" title={pictureBusy ? "Uploading picture" : "Change profile picture"} className="absolute bottom-0 right-0 grid h-5 w-5 cursor-pointer place-items-center rounded-full bg-indigo-600 text-white shadow disabled:opacity-50">
+              {pictureUrl && (
+                <AuthenticatedProfileImage
+                  src={pictureUrl}
+                  refreshKey={pictureVersion}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              )}
+              <label
+                aria-label="Change profile picture"
+                title={
+                  pictureBusy ? "Uploading picture" : "Change profile picture"
+                }
+                className="absolute bottom-0 right-0 grid h-5 w-5 cursor-pointer place-items-center rounded-full bg-indigo-600 text-white shadow disabled:opacity-50"
+              >
                 <Camera size={11} />
-                <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="sr-only" disabled={pictureBusy} onChange={(event) => { void handleProfilePicture(event.currentTarget.files?.[0]); event.currentTarget.value = ""; }} />
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  className="sr-only"
+                  disabled={pictureBusy}
+                  onChange={(event) => {
+                    void handleProfilePicture(event.currentTarget.files?.[0]);
+                    event.currentTarget.value = "";
+                  }}
+                />
               </label>
             </div>
 
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold">{user.full_name}</p>
-              <p className="truncate text-xs text-slate-500">{roleLabel[user.role] ?? user.role}</p>
-              {pictureMessage && <p role="status" className="mt-1 text-[10px] text-slate-500">{pictureMessage}</p>}
+              <p className="truncate text-xs text-slate-500">
+                {roleLabel[user.role] ?? user.role}
+              </p>
+              {pictureMessage && (
+                <p role="status" className="mt-1 text-[10px] text-slate-500">
+                  {pictureMessage}
+                </p>
+              )}
             </div>
           </div>
 
@@ -228,9 +256,7 @@ export default function WorkspaceLayout() {
             </button>
 
             <div className="min-w-0">
-              <p className="text-sm text-slate-500">
-                Your workspace
-              </p>
+              <p className="text-sm text-slate-500">Your workspace</p>
               <h2 className="truncate font-semibold">
                 Welcome, {user.full_name}
               </h2>
